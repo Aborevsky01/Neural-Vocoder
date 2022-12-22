@@ -95,4 +95,5 @@ class TrainConfig:
     grad_clip_thresh = 1.0
 
     batch_expand_size = 16
+    save_step = 3000
     segment = 1024 * 8
