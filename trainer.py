@@ -5,6 +5,8 @@ import random
 import torch
 from tqdm import tqdm
 
+from logger import get_visualizer
+
 
 class Trainer:
     def __init__(
@@ -32,7 +34,7 @@ class Trainer:
         self.logger = logging.getLogger("trainer")
         self.logger.setLevel(logging.DEBUG)
 
-        # self.writer = get_visualizer(config, self.logger, config.visualize)
+        self.writer = get_visualizer(config, self.logger, config.visualize)
         self.checkpoint_dir = config.save_dir
 
     def _train_epoch(self, epoch):
@@ -43,12 +45,12 @@ class Trainer:
             audio = self.process_batch(mel_target, wave, is_train=True)
 
             if batch_idx % self.log_step == 0:
-                # self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
-                # for name in self.model.loss_names:
-                # self.writer.add_scalar('loss_' + name, float(getattr(self.model, 'loss_' + name)))
+                self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
+                for name in self.model.loss_names:
+                    self.writer.add_scalar('loss_' + name, float(getattr(self.model, 'loss_' + name)))
                 self.logger.debug("Train Epoch: {} {} Loss: G {:.6f} & D {:.6f}".format(
                     epoch, self._progress(batch_idx), self.model.loss_G, self.model.loss_D))
-                # self._log_audio(audio, 'train')
+                self._log_audio(audio, 'train')
 
         self._evaluation_epoch(epoch)
 
@@ -71,8 +73,8 @@ class Trainer:
                 wave = batch["waves"].float().to(self.device)
 
                 audio = self.process_batch(mel_target, wave, is_train=False)
-            # self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
-            # self._log_audio(audio, 'inference')
+            self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
+            self._log_audio(audio, 'inference')
 
         return
 
