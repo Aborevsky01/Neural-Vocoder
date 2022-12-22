@@ -43,8 +43,8 @@ def get_data_to_buffer(train_config):
     for i in tqdm(range(len(wave_names))):
         wave_name = os.path.join(train_config.wave_path, wave_names[i])
         wave = torch.from_numpy(librosa.load(wave_name)[0]).unsqueeze(0)
-        start_pos = random.randint(0, wave.shape[-1] - train_config.segment_size)
-        wave = wave[:, start_pos: train_config.segment_size + start_pos]
+        start_pos = random.randint(0, wave.shape[-1] - train_config.segment)
+        wave = wave[:, start_pos: train_config.segment + start_pos]
 
         mel_gt_path = ROOT_PATH / 'mels' / "ljspeech-mel-{0}.npy".format(i + 1)
         if not mel_gt_path.exists():
